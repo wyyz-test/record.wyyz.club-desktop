@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>装备喂养计算</title>
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .table-wrapper {
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .table {
+            border: 1px solid #dee2e6;
+        }
+
+        .table thead th {
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table tfoot tr:first-child td {
+            border-top: 2px solid #dee2e6;
+        }
+
+        .table td {
+            border-left: 1px solid #dee2e6; /* 添加左边框 */
+            border-right: 1px solid #dee2e6; /* 添加右边框 */
+        }
+
+        .center-text {
+            text-align: center;
+            margin-top: 20px; /* 根据需要调整上边距 */
+        }
+
+
+    </style>
+</head>
+
+<script src="./js/exp.js"></script>
+
+<body>
+<div class="container mt-5">
+    <div class="d-flex align-items-center mb-3">
+        <div class="flex-grow-1 d-flex align-items-center">
+            <input type="text" class="form-control me-2" id="queryInput" placeholder="等级" style="width: 100px;">
+            <button id="queryBtn" class="btn btn-secondary me-2" onclick="search()">查询</button>
+            <div id="infoDisplay"><!-- 无需额外类 --></div>
+        </div>
+        <button type="button" class="ms-auto btn btn-secondary addRow me-3">新增装备</button>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="table" id="equipmentTable">
+            <thead class="table-light">
+            <tr>
+                <!--                <th scope="col"><input type="checkbox" id="selectAll"></th>-->
+                <th scope="col">#</th>
+                <th scope="col">装备名称</th>
+                <th scope="col">词条等级</th>
+                <th scope="col">词条等级百分比</th>
+                <th scope="col">升级所需经验</th> <!-- 新增列 -->
+                <th scope="col">当前累积经验</th> <!-- 新增列 -->
+                <th scope="col">喂养暴击经验</th> <!-- 新增列 -->
+                <th scope="col">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><input type="checkbox"></td>
+                <td>装备1</td>
+                <td>1</td>
+                <td>0%</td>
+                <td>100</td> <!-- 新列内容 -->
+                <td>300</td>  <!-- 新列内容 -->
+                <td>600</td>  <!-- 新列内容 -->
+                <td>
+                    <a href="#" class="editLink me-2">编辑</a>
+                    <a href="#" class="deleteLink">删除</a>
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr id="bbj">
+                <td></td>
+                <td>喂养后装备等级</td>
+                <td>0</td>
+                <td>0%</td>
+                <td></td> <!-- 升级所需经验留空 -->
+                <td></td> <!-- 当前累积经验留空 -->
+                <td></td> <!-- 当前累积经验留空 -->
+                <td></td>
+            </tr>
+            <tr id="bj">
+                <td></td>
+                <td>喂养后装备等级(全部暴击)</td>
+                <td>0</td>
+                <td>0%</td>
+                <td></td> <!-- 升级所需经验留空 -->
+                <td></td> <!-- 当前累积经验留空 -->
+                <td></td> <!-- 当前累积经验留空 -->
+                <td></td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="center-text">
+        使用方式：添加装备，编辑对应的词条等级后点击保存并勾选，喂养等级自动计算到表格最下方。
+        <p></p>
+        注意：升级神的装备需要编辑的时候勾选 神 选择框。查询时输入 神X 或 X 即可。
+        <p></p>
+        <a href="./index.html">回到主页</a>
+    </div>
+
+</div>
+</body>
+</html>
