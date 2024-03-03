@@ -9,17 +9,20 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap-icons.css">
     <link rel="icon" href="static/favicon.ico" type="image/x-icon">
     <style>
-
         #roleStatsModal .table-custom th,
         #roleStatsModal .table-custom td {
-            padding: 0.3rem; /* 减小单元格内边距 */
-            font-size: 0.8rem; /* 减小字体大小 */
+            padding: 0.3rem;
+            /* 减小单元格内边距 */
+            font-size: 0.8rem;
+            /* 减小字体大小 */
         }
 
         /* 调整图片大小和卡片高度，如有必要 */
         .custom-card img {
-            height: 80px; /* 调整图片高度 */
-            object-fit: cover; /* 保持图片宽高比 */
+            height: 80px;
+            /* 调整图片高度 */
+            object-fit: cover;
+            /* 保持图片宽高比 */
         }
 
         .text-truncate {
@@ -29,13 +32,18 @@
             text-overflow: ellipsis;
         }
 
-        #scrollTopBtn img, #scrollBottomBtn img {
-            width: 30px; /* 调整为合适的尺寸 */
-            height: 30px; /* 调整为合适的尺寸 */
+        #scrollTopBtn img,
+        #scrollBottomBtn img {
+            width: 30px;
+            /* 调整为合适的尺寸 */
+            height: 30px;
+            /* 调整为合适的尺寸 */
         }
+
         .editable:hover {
             cursor: pointer;
-            background-color: #f0f0f0; /* 轻微的背景色变化 */
+            background-color: #f0f0f0;
+            /* 轻微的背景色变化 */
         }
 
         .nav-top {
@@ -44,17 +52,23 @@
 
         /* 自定义样式以增加表单元素之间的间距 */
         .form-group {
-            margin-bottom: 1rem; /* 调整为所需的间距 */
+            margin-bottom: 1rem;
+            /* 调整为所需的间距 */
         }
+
         .modal-footer {
-            justify-content: center; /* 按钮居中显示 */
+            justify-content: center;
+            /* 按钮居中显示 */
         }
+
         .modal-footer .btn {
-            margin: 0 10px; /* 按钮之间的间距 */
+            margin: 0 10px;
+            /* 按钮之间的间距 */
         }
 
         .toast-container {
-            z-index: 1000; /* 设置一个较高的 z-index 值 */
+            z-index: 1000;
+            /* 设置一个较高的 z-index 值 */
         }
     </style>
 </head>
@@ -262,7 +276,8 @@
                         </div>
                         <div class="form-group">
                             <label for="password">密码</label>
-                            <input type="password" class="form-control" id="password" placeholder="密码(第一次登录会将输入的作为后续登录密码)">
+                            <input type="password" class="form-control" id="password"
+                                placeholder="密码(第一次登录会将输入的作为后续登录密码)">
                         </div>
                     </form>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -272,7 +287,9 @@
                                 下次自动登录
                             </label>
                         </div>
-                        <a href="javascript:void(0);" data-bs-toggle="popover" title="忘记密码" data-bs-content="如果2.24号之后登录过请在浏览器开发者工具->应用->本地存储空间->userNameAndPassWord中查看。如果没有请发送邮件到：support@hxzy.me或者colg私信hxzy。私信内容包含：用户名+新密码" style="color: blue;">忘记密码？</a>
+                        <a href="javascript:void(0);" data-bs-toggle="popover" title="忘记密码"
+                            data-bs-content="如果2.24号之后登录过请在浏览器开发者工具->应用->本地存储空间->userNameAndPassWord中查看。如果没有请发送邮件到：support@hxzy.me或者colg私信hxzy。私信内容包含：用户名+新密码"
+                            style="color: blue;">忘记密码？</a>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -319,6 +336,28 @@
             </div>
         </div>
     </div>
+
+    <!-- 确认对话框模态框 -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">确认操作</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    您确定要执行这个操作吗？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="confirmBtn">确认</button>
+                    <button type="button" class="btn btn-secondary" id="cancelBtn" data-bs-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 
     <!-- 移动到顶部的按钮 -->
     <button type="button" class="btn" id="scrollTopBtn" style="position: fixed; bottom: 60px; right: 30px;">

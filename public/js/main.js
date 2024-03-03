@@ -240,7 +240,11 @@ function initialLogin() {
 
         // 检查用户名和密码是否都已输入
         if (!username.trim() || !password.trim()) {
-            alert('用户名和密码都是必填项！');
+            showConfirmModal('错误提示', '用户名和密码都是必填项！', false)
+                .then(() => {
+                    console.log('知道了');
+                    // 处理用户点击确认后的逻辑
+                })
             return; // 中止函数执行
         }
 
@@ -291,12 +295,23 @@ function initializeModal() {
             // 用户已登录，执行相应逻辑
             console.log('用户已登录，执行其他逻辑。');
             console.log("isLogin:", isLogin)
-            alert("确认要退出登录？")
-            isLogin = false
-            checkLogin("manual")
-            updateLoginName("未登录")
-            showToast("登录提示", "退出成功~")
-            localStorage.setItem('autoLogin', "false");
+            showConfirmModal('退出登录', '确认要退出登录？', true)
+                .then((result) => {
+                    if (result) {
+                        console.log('用户确认了操作');
+                        // 这里处理用户确认的逻辑
+                        isLogin = false
+                        checkLogin("manual")
+                        updateLoginName("未登录")
+                        showToast("登录提示", "退出成功~")
+                        localStorage.setItem('autoLogin', "false");
+                    }
+                })
+                .catch((result) => {
+                    console.log('用户取消了操作');
+                    // 这里处理用户取消的逻辑
+                });
+
         } else {
             // 用户未登录，手动打开模态框
             var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
@@ -331,7 +346,10 @@ function saveData() {
         removeTableEditListener()
         addTableEditListener()
     } else {
-        alert('请填写所有字段');
+        showConfirmModal('错误提示', '请填写所有字段', false).then(() => {
+            console.log('知道了');
+            // 处理用户点击确认后的逻辑
+        });
     }
 }
 
@@ -396,7 +414,7 @@ function refreshPage() {
 function deleteRow(targetId) {
     // 找到具有给定 UUID 的元素的索引
     const index = tableData.findIndex(item => item.id === targetId);
-// 如果找到了元素，则从数组中移除它
+    // 如果找到了元素，则从数组中移除它
     if (index !== -1) {
         tableData.splice(index, 1);
     }
@@ -443,7 +461,10 @@ function importData() {
                 checkData()
                 refreshPage();
             } catch (error) {
-                alert('文件内容格式错误！');
+                showConfirmModal('错误提示', '文件内容格式错误！', false).then(() => {
+                    console.log('知道了');
+                    // 处理用户点击确认后的逻辑
+                });
             }
         };
         reader.readAsText(file);
@@ -547,13 +568,22 @@ function filterTable() {
 
 // 清空数据的函数
 function clearData() {
-    if (confirm('确定要清空所有数据吗？此操作不可撤销。')) {
-        // 清空数据
-        tableData = [];
-        localStorage.setItem('tableData', JSON.stringify(tableData));
-        localStorage.removeItem('noShowModalAgain');
-        refreshPage(); // 刷新页面以更新视图
-    }
+    showConfirmModal('清空确认', '您确定要清空吗？请注意，操作不可撤销！', true)
+        .then((result) => {
+            if (result) {
+                console.log('用户确认了操作');
+                // 这里处理用户确认的逻辑
+                // 清空数据
+                tableData = [];
+                localStorage.setItem('tableData', JSON.stringify(tableData));
+                localStorage.removeItem('noShowModalAgain');
+                refreshPage(); // 刷新页面以更新视图
+            }
+        })
+        .catch((result) => {
+            console.log('用户取消了操作');
+            // 这里处理用户取消的逻辑
+        });
 }
 
 function copyToClipboard() {
@@ -701,23 +731,35 @@ function checkLogin(type) {
 
 function syncData() {
     if (isLogin) {
-        alert("注意：点击同步按钮会立即覆盖本机数据！")
-        searchData(userData['username'])
-            .then(data => {
-                jsonData = JSON.parse(data['result'])
-                tableData = jsonData['data'] != null || jsonData['data'] !== undefined ? jsonData['data'] : tableData
-                console.log(tableData)
-                if (tableData != null) {
-                    general('all')
-                    populateAll()
-                    removeTableEditListener()
-                    addTableEditListener()
-                    localStorage.setItem('tableData', JSON.stringify(tableData));
+        showConfirmModal('同步确认', '您确定要执行这个操作吗？', true)
+            .then((result) => {
+                if (result) {
+                    console.log('用户确认了操作');
+                    searchData(userData['username'])
+                        .then(data => {
+                            jsonData = JSON.parse(data['result'])
+                            tableData = jsonData['data'] != null || jsonData['data'] !== undefined ? jsonData['data'] : tableData
+                            console.log(tableData)
+                            if (tableData != null) {
+                                general('all')
+                                populateAll()
+                                removeTableEditListener()
+                                addTableEditListener()
+                                localStorage.setItem('tableData', JSON.stringify(tableData));
+                            }
+                            console.log(data)
+                        })
                 }
-                console.log(data)
             })
+            .catch((result) => {
+                console.log('用户取消了操作');
+                // 这里处理用户取消的逻辑
+            });
     } else {
-        alert("请登录后再执行上传操作！")
+        showConfirmModal('错误提示', "请登录后再执行上传操作！", false).then(() => {
+            console.log('知道了');
+            // 处理用户点击确认后的逻辑
+        });
     }
 }
 
@@ -735,12 +777,62 @@ function upLoadData() {
 
 function updateNow() {
     if (!isLogin) {
-        alert("请登录后再执行上传操作！")
+        showConfirmModal('错误提示', '请登录后再执行上传操作!', false).then(() => {
+            console.log('知道了');
+            // 处理用户点击确认后的逻辑
+        });
         return
     }
-    alert("注意：立即上传会立即覆盖云端数据！")
-    updataData()
+    showConfirmModal('上传确认', '您确定要上传数据到云端吗？', true)
+        .then((result) => {
+            if (result) {
+                console.log('用户确认了操作');
+                // 这里处理用户确认的逻辑
+                updataData()
+            }
+        })
+        .catch((result) => {
+            console.log('用户取消了操作');
+            // 这里处理用户取消的逻辑
+        });
 }
+
+function showConfirmModal(title, message, showCancelButton = true) {
+    return new Promise((resolve, reject) => {
+        // 获取模态框中的元素
+        var modal = document.getElementById('confirmModal');
+        var modalTitle = document.getElementById('confirmModalLabel');
+        var modalBody = modal.querySelector('.modal-body');
+        var confirmBtn = modal.querySelector('#confirmBtn');
+        var cancelBtn = modal.querySelector('#cancelBtn');
+
+        // 设置模态框的标题和正文内容
+        modalTitle.textContent = title;
+        modalBody.textContent = message;
+
+        // 根据showCancelButton参数决定是否显示取消按钮
+        cancelBtn.style.display = showCancelButton ? "" : "none";
+
+        // 显示模态框
+        var confirmModal = new bootstrap.Modal(modal, {
+            keyboard: false
+        });
+        confirmModal.show();
+
+        // 处理确认按钮点击
+        confirmBtn.onclick = () => {
+            resolve(true);
+            confirmModal.hide();
+        };
+
+        // 直接处理模态框关闭事件，包括点击取消按钮或模态框背景
+        modal.addEventListener('hidden.bs.modal', function handler(event) {
+            modal.removeEventListener('hidden.bs.modal', handler);
+            reject(false); // 视为取消
+        });
+    });
+}
+
 
 function initialEventListener() {
     // 获取复选框元素
