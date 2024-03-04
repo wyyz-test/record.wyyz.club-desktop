@@ -436,32 +436,98 @@ function updateSelectors() {
     generateSelectOptions(document.getElementById('selectAttr4'), options);
 }
 
+function convertToCSV(objArray) {
+    // 确保输入是对象数组
+    const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+    // 检查数组是否为空
+    if(array.length === 0) return '';
+
+    // 提取头部（键名）作为CSV的第一行
+    const headers = Object.keys(array[0]);
+    const csv = [
+        headers.join(','), // 添加标题行
+        ...array.map(row =>
+            headers.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(',')
+        )
+    ].join('\n');
+
+    return csv;
+}
+
+// 处理特殊字符（如逗号、换行符）的函数
+function replacer(key, value) {
+    if(typeof value === 'string') {
+        // 替换内部的双引号为两个双引号（CSV格式）
+        return value.replace(/"/g, '""');
+    }
+    return value;
+}
+
+
+function downloadFile(dataStr, dataType, fileName) {
+    const blob = new Blob([dataStr], {type: dataType});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link); // 为了兼容某些浏览器
+    link.click();
+    document.body.removeChild(link); // 清理DOM
+    URL.revokeObjectURL(url); // 释放URL对象
+}
+
 // 导出数据
 function exportData() {
-    const dataStr = JSON.stringify(tableData);
-    const dataUri = 'data:text/plain;charset=utf-8,' + encodeURIComponent(dataStr);
-    const exportFileDefaultName = 'all_data.txt';
+    // 获取用户选择的导出类型
+    const format = document.getElementById('exportType').value;
+    let dataStr = '';
+    let exportFileDefaultName = '';
 
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
+    // 获取当前日期和时间，并格式化为字符串，例如：2023-03-28_15-30
+    const date = new Date();
+    const dateString = date.toISOString().split('T')[0]; // 获取日期 'YYYY-MM-DD'
+    const timeString = date.toTimeString().split(' ')[0].replace(/:/g, '-').slice(0, 5); // 获取时间 'HH-MM'
+
+    if (format === 'json') {
+        dataStr = JSON.stringify(tableData);
+        exportFileDefaultName = `dnf_record_data_${dateString}_${timeString}.json`;
+    } else if (format === 'csv') {
+        dataStr = convertToCSV(tableData);
+        exportFileDefaultName = `dnf_record_data_${dateString}_${timeString}.csv`;
+    }
+
+    // 调用下载函数
+    downloadFile(dataStr, format === 'json' ? 'data:text/json;charset=utf-8,' : 'data:text/csv;charset=utf-8,', exportFileDefaultName);
+
+    // 关闭模态框
+    var exportModal = bootstrap.Modal.getInstance(document.getElementById('exportModal'));
+    exportModal.hide();
 }
+
+
+
 
 // 导入数据
 function importData() {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
-
     if (file) {
         const reader = new FileReader();
         reader.onload = function (e) {
+            const result = e.target.result;
             try {
-                tableData = JSON.parse(e.target.result);
-                checkData()
+                // 自动根据文件类型解析数据
+                if (file.name.endsWith('.json')) {
+                    tableData = JSON.parse(result);
+                } else if (file.name.endsWith('.csv')) {
+                    tableData = parseCSV(result);
+                } else {
+                    throw new Error('Unsupported file type');
+                }
+                checkData();
                 refreshPage();
             } catch (error) {
-                showConfirmModal('错误提示', '文件内容格式错误！', false).then(() => {
+                showConfirmModal('错误提示', '文件内容格式错误或不支持的文件类型！', false).then(() => {
                     console.log('知道了');
                     // 处理用户点击确认后的逻辑
                 });
@@ -470,6 +536,28 @@ function importData() {
         reader.readAsText(file);
     }
 }
+
+function parseCSV(csvString) {
+    const lines = csvString.split('\n');
+    const result = [];
+    const headers = lines[0].split(',');
+
+    for (let i = 1; i < lines.length; i++) {
+        const obj = {};
+        const currentLine = lines[i].split('","');
+
+        for (let j = 0; j < headers.length; j++) {
+            // 去除字段值中的转义双引号
+            let value = currentLine[j] || "";
+            value = value.replace(/^"|"$/g, '').replace(/\\"/g, '"');
+            obj[headers[j]] = value;
+        }
+        result.push(obj);
+    }
+    return result;
+}
+
+
 
 // 动态填充属性筛选下拉框
 function populateAttrFilter() {

@@ -82,292 +82,312 @@
 <script src="js/main.js"></script>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item nav-top">
-                        <label for="roleFilter" style="display: inline-block;">角色：</label>
-                        <select id="roleFilter" onchange="filterTable()" style="display: inline-block;">
-                            <option value="">所有角色</option>
-                            <!-- 角色选项将动态生成 -->
-                        </select>
-                    </li>
-                    <li class="nav-item nav-top">
-                        <label for="attrFilter" style="display: inline-block;">属性：</label>
-                        <select id="attrFilter" onchange="filterTable()" style="display: inline-block;width: 100px">
-                            <option value="">所有属性</option>
-                            <!-- 属性选项将动态生成 -->
-                        </select>
-                    </li>
-                    <li class="nav-item nav-top">
-                        <label for="locationFilter" style="display: inline-block;">部位：</label>
-                        <select id="locationFilter" onchange="filterTable()" style="display: inline-block;width: 100px">
-                            <option value="">所有部位</option>
-                            <!-- 属性选项将动态生成 -->
-                        </select>
-                    </li>
-                    <li class="nav-item nav-top">
-                        <label for="nameFilter" style="display: inline-block;">名称：</label>
-                        <select id="nameFilter" onchange="filterTable()" style="display: inline-block;width: 100px">
-                            <option value="">所有名称</option>
-                            <!-- 属性选项将动态生成 -->
-                        </select>
-                    </li>
-                    <li class="nav-item nav-top">
-                        <label for="markFilter" style="display: inline-block;">备注：</label>
-                        <select id="markFilter" onchange="filterTable()" style="display: inline-block;width: 100px">
-                            <option value="">所有备注</option>
-                            <!-- 属性选项将动态生成 -->
-                        </select>
-                    </li>
-                    <li class="nav-item nav-top">
-                        <label for="nameFilter" style="display: inline-block;">韩服最新版本</label>
-                        <input class="form-check-input" type="checkbox" value="" id="verSionCheck">
-                    </li>
-                    <li class="nav-item nav-top">
-                        <a href="./wy.html">喂养计算器</a>
-                    </li>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item nav-top">
+                    <label for="roleFilter" style="display: inline-block;">角色：</label>
+                    <select id="roleFilter" onchange="filterTable()" style="display: inline-block;">
+                        <option value="">所有角色</option>
+                        <!-- 角色选项将动态生成 -->
+                    </select>
+                </li>
+                <li class="nav-item nav-top">
+                    <label for="attrFilter" style="display: inline-block;">属性：</label>
+                    <select id="attrFilter" onchange="filterTable()" style="display: inline-block;width: 100px">
+                        <option value="">所有属性</option>
+                        <!-- 属性选项将动态生成 -->
+                    </select>
+                </li>
+                <li class="nav-item nav-top">
+                    <label for="locationFilter" style="display: inline-block;">部位：</label>
+                    <select id="locationFilter" onchange="filterTable()" style="display: inline-block;width: 100px">
+                        <option value="">所有部位</option>
+                        <!-- 属性选项将动态生成 -->
+                    </select>
+                </li>
+                <li class="nav-item nav-top">
+                    <label for="nameFilter" style="display: inline-block;">名称：</label>
+                    <select id="nameFilter" onchange="filterTable()" style="display: inline-block;width: 100px">
+                        <option value="">所有名称</option>
+                        <!-- 属性选项将动态生成 -->
+                    </select>
+                </li>
+                <li class="nav-item nav-top">
+                    <label for="markFilter" style="display: inline-block;">备注：</label>
+                    <select id="markFilter" onchange="filterTable()" style="display: inline-block;width: 100px">
+                        <option value="">所有备注</option>
+                        <!-- 属性选项将动态生成 -->
+                    </select>
+                </li>
+                <li class="nav-item nav-top">
+                    <label for="nameFilter" style="display: inline-block;">韩服最新版本</label>
+                    <input class="form-check-input" type="checkbox" value="" id="verSionCheck">
+                </li>
+                <li class="nav-item nav-top">
+                    <a href="./wy.html">喂养计算器</a>
+                </li>
+            </ul>
+            <a class="d-flex nav-item" id="user-name">未登录</a>
+        </div>
+    </div>
+</nav>
+
+<table class="table" id="myTable">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col" style="width: 100px;">角色</th>
+        <th scope="col">类别</th>
+        <th scope="col">部位</th>
+        <th scope="col">名称</th>
+        <th scope="col">图标</th>
+        <th scope="col">属性1</th>
+        <th scope="col">属性2</th>
+        <th scope="col">属性3</th>
+        <th scope="col">属性4</th>
+        <th scope="col">备注</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- 表格内容将通过JavaScript动态生成 -->
+    </tbody>
+    <!-- 操作行 -->
+    <tfoot>
+    <tr id="actionRow">
+        <td>#</td>
+        <td><input type="text" class="form-control" id="inputRole"></td>
+        <td>
+            <select class="form-select" id="categorySelect" onchange="updatePartsSelect()" style="width: 82px;">
+                <option value="防具">防具</option>
+                <option value="首饰">首饰</option>
+                <option value="特殊">特殊</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select" id="partsSelect" style="width: 82px;" onchange="updateSelectors()">
+                <!-- 部位选项将根据类别动态生成 -->
+            </select>
+        </td>
+        <td>
+            <select class="form-select" id="inputName" style="width: 82px;" onchange="updateSelectors()">
+                <option value="蓝灵">蓝灵</option>
+                <option value="魔女">魔女</option>
+                <option value="恩特">恩特</option>
+                <option value="海贼">海贼</option>
+                <option value="深潜">深潜</option>
+            </select>
+        </td>
+        <td>——</td>
+        <td><select class="form-select" id="selectAttr1"></select></td>
+        <td><select class="form-select" id="selectAttr2"></select></td>
+        <td><select class="form-select" id="selectAttr3"></select></td>
+        <td><select class="form-select" id="selectAttr4"></select></td>
+        <td><input type="text" class="form-control" id="inputRemark"></td>
+        <td><i class="bi bi-save" style="cursor:pointer;" onclick="saveData()"></i></td>
+    </tr>
+    </tfoot>
+</table>
+
+<!-- 按钮容器 -->
+<div class="buttons-container text-center mt-3 mb-4">
+    <button class="btn btn-success" onclick="saveData()">保存</button>
+    <button class="btn btn-primary" onclick="refreshPage()">刷新</button>
+    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exportModal">导出</button>
+    <input type="file" id="fileInput" style="display: none;" onchange="importData()" accept=".json, .csv">
+    <button class="btn btn-warning" onclick="document.getElementById('fileInput').click()">导入</button>
+    <button class="btn btn-danger" onclick="clearData()">清空</button>
+    <!-- 按钮用于触发复制操作 -->
+    <button class="btn btn-secondary" onclick="copyToClipboard()">复制</button>
+    <!-- 登录按钮 -->
+    <button class="btn btn-success" id="loginButton">登录</button>
+    <button class="btn btn-primary" id="syncButton" onclick="syncData()" disabled>同步</button>
+    <button class="btn btn-info" id="updateButton" onclick="updateNow()">上传</button>
+    <button class="btn btn-warning" id="sortButton" onclick="sortData()">排序</button>
+    <button class="btn btn-danger" id="dataButton" onclick="showData()">统计</button>
+
+</div>
+
+<!-- 使用方法模态框 -->
+<div class="modal fade" id="usageModal" tabindex="-1" aria-labelledby="usageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="usageModalLabel">使用方法</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>欢迎使用本网页，以下是一些基本的使用方法：</p>
+                <ul>
+                    <li><strong>角色筛选：</strong>筛选出指定角色的所有数据。</li>
+                    <li><strong>属性筛选：</strong>筛选出指定属性的所有数据。</li>
+                    <li><strong>部位筛选：</strong>筛选出指定部位的所有数据。</li>
+                    <li><strong>名字筛选：</strong>筛选出指定名字的所有数据。</li>
+                    <li><strong>保存：</strong>点击“保存”按钮将当前数据保存到本地存储。</li>
+                    <li><strong>刷新：</strong>点击“刷新”按钮可刷新页面内容。</li>
+                    <li><strong>导出：</strong>点击“导出”按钮可以将当前的数据导出为TXT文件。</li>
+                    <li><strong>导入：</strong>点击“导入”按钮可以从TXT文件导入数据。</li>
+                    <li><strong>清空：</strong>点击“清空”按钮将清除所有现有数据（需确认）。</li>
+                    <li><strong>复制：</strong>点击“复制”按钮将复制现有数据到剪贴板。</li>
+                    <li><strong>登录：</strong>点击“登录”按钮将打开登录窗口进行登录操作。</li>
+                    <li><strong>同步：</strong>点击“同步”按钮将下载云端数据到本地。</li>
+                    <li><strong>上传：</strong>点击“上传”按钮将立即上传数据到云端。</li>
+                    <li><strong>排序：</strong>点击“排序”按钮将按角色重新排序数据。</li>
+                    <li><strong>统计：</strong>点击“统计”按钮将展示各个角色数据。</li>
                 </ul>
-                <a class="d-flex nav-item" id="user-name">未登录</a>
+                <p>请注意，所有的更改在关闭页面前都会被自动保存（每5分钟会自动上传到云端）。</p>
+                <p><strong>PS：</strong>点击表格中已有数据可以进行修改，修改完成后点击任意位置自动保存。</p>
+                <!-- 关闭倒计时 -->
+                <p id="countdownText">本提示将在 10 秒后自动关闭。</p>
+                <!-- 禁用自动关闭勾选框 -->
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="disableAutoCloseCheck">
+                    <label class="form-check-label" for="disableAutoCloseCheck">
+                        禁用自动关闭
+                    </label>
+                </div>
+                <!-- 不再显示勾选框 -->
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="noShowAgainCheck">
+                    <label class="form-check-label" for="noShowAgainCheck">
+                        下次不再显示此提示
+                    </label>
+                </div>
             </div>
         </div>
-    </nav>
-
-    <table class="table" id="myTable">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col" style="width: 100px;">角色</th>
-                <th scope="col">类别</th>
-                <th scope="col">部位</th>
-                <th scope="col">名称</th>
-                <th scope="col">图标</th>
-                <th scope="col">属性1</th>
-                <th scope="col">属性2</th>
-                <th scope="col">属性3</th>
-                <th scope="col">属性4</th>
-                <th scope="col">备注</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- 表格内容将通过JavaScript动态生成 -->
-        </tbody>
-        <!-- 操作行 -->
-        <tfoot>
-            <tr id="actionRow">
-                <td>#</td>
-                <td><input type="text" class="form-control" id="inputRole"></td>
-                <td>
-                    <select class="form-select" id="categorySelect" onchange="updatePartsSelect()" style="width: 82px;">
-                        <option value="防具">防具</option>
-                        <option value="首饰">首饰</option>
-                        <option value="特殊">特殊</option>
-                    </select>
-                </td>
-                <td>
-                    <select class="form-select" id="partsSelect" style="width: 82px;" onchange="updateSelectors()">
-                        <!-- 部位选项将根据类别动态生成 -->
-                    </select>
-                </td>
-                <td>
-                    <select class="form-select" id="inputName" style="width: 82px;" onchange="updateSelectors()">
-                        <option value="蓝灵">蓝灵</option>
-                        <option value="魔女">魔女</option>
-                        <option value="恩特">恩特</option>
-                        <option value="海贼">海贼</option>
-                        <option value="深潜">深潜</option>
-                    </select>
-                </td>
-                <td>——</td>
-                <td><select class="form-select" id="selectAttr1"></select></td>
-                <td><select class="form-select" id="selectAttr2"></select></td>
-                <td><select class="form-select" id="selectAttr3"></select></td>
-                <td><select class="form-select" id="selectAttr4"></select></td>
-                <td><input type="text" class="form-control" id="inputRemark"></td>
-                <td><i class="bi bi-save" style="cursor:pointer;" onclick="saveData()"></i></td>
-            </tr>
-        </tfoot>
-    </table>
-
-    <!-- 按钮容器 -->
-    <div class="buttons-container text-center mt-3 mb-4">
-        <button class="btn btn-success" onclick="saveData()">保存</button>
-        <button class="btn btn-primary" onclick="refreshPage()">刷新</button>
-        <button class="btn btn-info" onclick="exportData()">导出</button>
-        <input type="file" id="fileInput" style="display: none;" onchange="importData()" accept=".txt">
-        <button class="btn btn-warning" onclick="document.getElementById('fileInput').click()">导入</button>
-        <button class="btn btn-danger" onclick="clearData()">清空</button>
-        <!-- 按钮用于触发复制操作 -->
-        <button class="btn btn-secondary" onclick="copyToClipboard()">复制</button>
-        <!-- 登录按钮 -->
-        <button class="btn btn-success" id="loginButton">登录</button>
-        <button class="btn btn-primary" id="syncButton" onclick="syncData()" disabled>同步</button>
-        <button class="btn btn-info" id="updateButton" onclick="updateNow()">上传</button>
-        <button class="btn btn-warning" id="sortButton" onclick="sortData()">排序</button>
-        <button class="btn btn-danger" id="dataButton" onclick="showData()">统计</button>
-
     </div>
+</div>
 
-    <!-- 使用方法模态框 -->
-    <div class="modal fade" id="usageModal" tabindex="-1" aria-labelledby="usageModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="usageModalLabel">使用方法</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>欢迎使用本网页，以下是一些基本的使用方法：</p>
-                    <ul>
-                        <li><strong>角色筛选：</strong>筛选出指定角色的所有数据。</li>
-                        <li><strong>属性筛选：</strong>筛选出指定属性的所有数据。</li>
-                        <li><strong>部位筛选：</strong>筛选出指定部位的所有数据。</li>
-                        <li><strong>名字筛选：</strong>筛选出指定名字的所有数据。</li>
-                        <li><strong>保存：</strong>点击“保存”按钮将当前数据保存到本地存储。</li>
-                        <li><strong>刷新：</strong>点击“刷新”按钮可刷新页面内容。</li>
-                        <li><strong>导出：</strong>点击“导出”按钮可以将当前的数据导出为TXT文件。</li>
-                        <li><strong>导入：</strong>点击“导入”按钮可以从TXT文件导入数据。</li>
-                        <li><strong>清空：</strong>点击“清空”按钮将清除所有现有数据（需确认）。</li>
-                        <li><strong>复制：</strong>点击“复制”按钮将复制现有数据到剪贴板。</li>
-                        <li><strong>登录：</strong>点击“登录”按钮将打开登录窗口进行登录操作。</li>
-                        <li><strong>同步：</strong>点击“同步”按钮将下载云端数据到本地。</li>
-                        <li><strong>上传：</strong>点击“上传”按钮将立即上传数据到云端。</li>
-                        <li><strong>排序：</strong>点击“排序”按钮将按角色重新排序数据。</li>
-                        <li><strong>统计：</strong>点击“统计”按钮将展示各个角色数据。</li>
-                    </ul>
-                    <p>请注意，所有的更改在关闭页面前都会被自动保存（每5分钟会自动上传到云端）。</p>
-                    <p><strong>PS：</strong>点击表格中已有数据可以进行修改，修改完成后点击任意位置自动保存。</p>
-                    <!-- 关闭倒计时 -->
-                    <p id="countdownText">本提示将在 10 秒后自动关闭。</p>
-                    <!-- 禁用自动关闭勾选框 -->
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="disableAutoCloseCheck">
-                        <label class="form-check-label" for="disableAutoCloseCheck">
-                            禁用自动关闭
+<!-- 登录窗口（Bootstrap Modal） -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">登录</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 登录表单 -->
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" class="form-control" id="username"
+                               placeholder="请输入用户名(用户名不可重复)">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" class="form-control" id="password"
+                               placeholder="密码(第一次登录会将输入的作为后续登录密码)">
+                    </div>
+                </form>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <input class="form-check-input" type="checkbox" id="noLoginAgain">
+                        <label class="form-check-label" for="noLoginAgain">
+                            下次自动登录
                         </label>
                     </div>
-                    <!-- 不再显示勾选框 -->
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="noShowAgainCheck">
-                        <label class="form-check-label" for="noShowAgainCheck">
-                            下次不再显示此提示
-                        </label>
+                    <a href="javascript:void(0);" data-bs-toggle="popover" title="忘记密码"
+                       data-bs-content="如果2.24号之后登录过请在浏览器开发者工具->应用->本地存储空间->userNameAndPassWord中查看。如果没有请发送邮件到：support@hxzy.me或者colg私信hxzy。私信内容包含：用户名+新密码"
+                       style="color: blue;">忘记密码？</a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- 登录按钮 -->
+                <button type="submit" form="loginForm" class="btn btn-primary">登录</button>
+                <!-- 取消按钮 -->
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 模态框 -->
+<div class="modal fade" id="roleStatsModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">角色部位统计</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row" id="roleStatsGrid">
+                        <!-- 角色统计卡片将在这里动态插入 -->
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- 登录窗口（Bootstrap Modal） -->
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="loginModalLabel">登录</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- 登录表单 -->
-                    <form id="loginForm">
-                        <div class="form-group">
-                            <label for="username">用户名</label>
-                            <input type="text" class="form-control" id="username" placeholder="请输入用户名(用户名不可重复)">
-                        </div>
-                        <div class="form-group">
-                            <label for="password">密码</label>
-                            <input type="password" class="form-control" id="password"
-                                placeholder="密码(第一次登录会将输入的作为后续登录密码)">
-                        </div>
-                    </form>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <input class="form-check-input" type="checkbox" id="noLoginAgain">
-                            <label class="form-check-label" for="noLoginAgain">
-                                下次自动登录
-                            </label>
-                        </div>
-                        <a href="javascript:void(0);" data-bs-toggle="popover" title="忘记密码"
-                            data-bs-content="如果2.24号之后登录过请在浏览器开发者工具->应用->本地存储空间->userNameAndPassWord中查看。如果没有请发送邮件到：support@hxzy.me或者colg私信hxzy。私信内容包含：用户名+新密码"
-                            style="color: blue;">忘记密码？</a>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <!-- 登录按钮 -->
-                    <button type="submit" form="loginForm" class="btn btn-primary">登录</button>
-                    <!-- 取消按钮 -->
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- 模态框 -->
-    <div class="modal fade" id="roleStatsModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalLabel">角色部位统计</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="container">
-                        <div class="row" id="roleStatsGrid">
-                            <!-- 角色统计卡片将在这里动态插入 -->
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-                </div>
+<!-- 通用的Toast容器 -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto" id="toastTitle">提示</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastBody">
+            消息内容。
+        </div>
+    </div>
+</div>
+
+<!-- 确认对话框模态框 -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">确认操作</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                您确定要执行这个操作吗？
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmBtn">确认</button>
+                <button type="button" class="btn btn-secondary" id="cancelBtn" data-bs-dismiss="modal">取消</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- 通用的Toast容器 -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer">
-        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto" id="toastTitle">提示</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+<!-- 导出数据模态框 -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportModalLabel">导出数据</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="toast-body" id="toastBody">
-                消息内容。
+            <div class="modal-body">
+                <select id="exportType" class="form-select">
+                    <option value="json">文本</option>
+                    <option value="csv">表格</option>
+                </select>
             </div>
-        </div>
-    </div>
-
-    <!-- 确认对话框模态框 -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmModalLabel">确认操作</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    您确定要执行这个操作吗？
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="confirmBtn">确认</button>
-                    <button type="button" class="btn btn-secondary" id="cancelBtn" data-bs-dismiss="modal">取消</button>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="exportData()">导出</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
             </div>
         </div>
     </div>
+</div>
 
+<!-- 移动到顶部的按钮 -->
+<button type="button" class="btn" id="scrollTopBtn" style="position: fixed; bottom: 60px; right: 30px;">
+    <img src="static/up-icon.png" alt="Up">
+</button>
 
-
-
-    <!-- 移动到顶部的按钮 -->
-    <button type="button" class="btn" id="scrollTopBtn" style="position: fixed; bottom: 60px; right: 30px;">
-        <img src="static/up-icon.png" alt="Up">
-    </button>
-
-    <!-- 移动到底部的按钮 -->
-    <button type="button" class="btn" id="scrollBottomBtn" style="position: fixed; bottom: 20px; right: 30px;">
-        <img src="static/down-icon.png" alt="Down">
-    </button>
+<!-- 移动到底部的按钮 -->
+<button type="button" class="btn" id="scrollBottomBtn" style="position: fixed; bottom: 20px; right: 30px;">
+    <img src="static/down-icon.png" alt="Down">
+</button>
 
 
 </body>
