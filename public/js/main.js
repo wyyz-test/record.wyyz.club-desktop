@@ -3,6 +3,7 @@
 var tableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var tempTableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var autoLogin = localStorage.getItem('autoLogin') === "true";
+var newVersionChecked = localStorage.getItem('newVersionChecked') === "true";
 // 可用的Bootstrap颜色类
 const classes = [
     "table-primary", "table-secondary", "table-success",
@@ -34,6 +35,9 @@ function generateSelectOptions(selectElement, options) {
     selectElement.innerHTML = ""; // 清空现有选项
     options.forEach(option => {
         const opt = document.createElement('option');
+        if (newVersionChecked){
+            option = old_to_new[option]!== undefined?old_to_new[option]:option
+        }
         opt.value = option;
         opt.textContent = option;
         selectElement.appendChild(opt);
@@ -151,11 +155,18 @@ function updateLoginName(username) {
 }
 
 function closeLoginModal() {
-    // 获取已经初始化的Modal实例
-    const loginModalEl = document.getElementById('loginModal');
-    const loginModalInstance = bootstrap.Modal.getInstance(loginModalEl);
-    loginModalInstance.hide();
+    try {
+        // 获取已经初始化的Modal实例
+        const loginModalEl = document.getElementById('loginModal');
+        const loginModalInstance = bootstrap.Modal.getInstance(loginModalEl);
+        loginModalInstance.hide();
+    } catch (e) {
+        // 在这里处理异常
+        console.error(e);
+        // 你可以在这里添加更多的错误处理逻辑，比如显示用户友好的错误消息等
+    } 
 }
+
 
 function login(username, password, type) {
     // 在登录逻辑中使用
@@ -222,7 +233,6 @@ function updataData() {
     setData(userData['username'], userData)
         .then(result => {
             showToast("上传提示", "上传成功~数据已保存~");
-            closeLoginModal()
         })
         .catch(error => {
             console.error('Error:', error);
@@ -440,7 +450,7 @@ function convertToCSV(objArray) {
     // 确保输入是对象数组
     const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
     // 检查数组是否为空
-    if(array.length === 0) return '';
+    if (array.length === 0) return '';
 
     // 提取头部（键名）作为CSV的第一行
     const headers = Object.keys(array[0]);
@@ -456,7 +466,7 @@ function convertToCSV(objArray) {
 
 // 处理特殊字符（如逗号、换行符）的函数
 function replacer(key, value) {
-    if(typeof value === 'string') {
+    if (typeof value === 'string') {
         // 替换内部的双引号为两个双引号（CSV格式）
         return value.replace(/"/g, '""');
     }
@@ -505,10 +515,9 @@ function exportData() {
 }
 
 
-
-
 // 导入数据
 function importData() {
+    localStorage.setItem('newVersionChecked', "false")
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
     if (file) {
@@ -556,7 +565,6 @@ function parseCSV(csvString) {
     }
     return result;
 }
-
 
 
 // 动态填充属性筛选下拉框
@@ -634,12 +642,13 @@ function populateMarkFilter() {
 
 // 同时考虑角色和属性进行筛选
 function filterTable() {
+    tableData = JSON.parse(localStorage.getItem('tableData'))
+
     const selectedRole = document.getElementById('roleFilter').value;
     const selectedAttr = document.getElementById('attrFilter').value;
     const selectedLocation = document.getElementById('locationFilter').value;
     const selectedName = document.getElementById('nameFilter').value;
     const selectedMark = document.getElementById('markFilter').value;
-
     const filteredData = tableData.filter(item => {
         const roleMatch = selectedRole ? item.role === selectedRole : true;
         const attrMatch = selectedAttr ? [item.attr1, item.attr2, item.attr3, item.attr4].includes(selectedAttr) : true;
@@ -663,8 +672,11 @@ function clearData() {
                 // 这里处理用户确认的逻辑
                 // 清空数据
                 tableData = [];
+                newVersionTemp = []
                 localStorage.setItem('tableData', JSON.stringify(tableData));
                 localStorage.removeItem('noShowModalAgain');
+                localStorage.removeItem('newVersionChecked');
+                localStorage.setItem("newVersionTemp", JSON.stringify(newVersionTemp))
                 refreshPage(); // 刷新页面以更新视图
             }
         })
@@ -852,7 +864,7 @@ function syncData() {
 }
 
 function upLoadData() {
-    if (tempTableData == tableData) {
+    if (tempTableData === tableData) {
         // 数据上传逻辑
         console.log("数据不需要上传...");
     } else {
@@ -928,13 +940,23 @@ function initialEventListener() {
 
     // 添加事件监听器到复选框
     checkbox.addEventListener('change', function () {
+        if (tableData.length === 0) {
+            return
+        }
         // 检查复选框是否被选中
         if (this.checked) {
+            var newVersionTemp = JSON.parse(localStorage.getItem('newVersionTemp')) || []
             console.log('加载最新版本...');
-            // 在这里添加复选框选中时要执行的代码
+            localStorage.setItem("tableData", JSON.stringify(newVersionTemp))
+            localStorage.setItem("newVersionChecked", "true")
+            refreshPage()
         } else {
-            console.log('使用国服版本...');
-            // 在这里添加复选框未被选中时要执行的代码
+            var oldVersionTemp = JSON.parse(localStorage.getItem('oldVersionTemp')) || [];
+            if (oldVersionTemp !== []) {
+                localStorage.setItem("tableData", JSON.stringify(oldVersionTemp))
+                localStorage.setItem("newVersionChecked", "false")
+                refreshPage()
+            }
         }
     });
 
@@ -957,9 +979,10 @@ function initial() {
     populateAll()
     updatePartsSelect()
     addTableEditListener()
+    checkAuto()
 }
 
-function checkAutoLogin() {
+function checkAuto() {
     if (autoLogin) {
         console.log("自动登录已开启~")
         let userInfo = JSON.parse(localStorage.getItem('userNameAndPassWord'));
@@ -967,11 +990,33 @@ function checkAutoLogin() {
     } else {
         console.log("未开启自动登录")
     }
+    if (newVersionChecked) {
+        console.log("自动登录开启新版本~")
+        var newVersionInput = document.getElementById('verSionCheck')
+        newVersionInput.checked = true
+    } else {
+        transferToNewVersion()
+    }
+
+}
+
+function transferToNewVersion() {
+    if (tableData.length === 0) {
+        return
+    }
+    localStorage.setItem('oldVersionTemp', JSON.stringify(tableData))
+    var newVersionTemp = tableData
+    for (var index = 0; index < tableData.length; index++) {
+        tableData[index]['attr1'] = (old_to_new[tableData[index]['attr1']] !== undefined) ? old_to_new[tableData[index]['attr1']] : tableData[index]['attr1']
+        tableData[index]['attr2'] = (old_to_new[tableData[index]['attr2']] !== undefined) ? old_to_new[tableData[index]['attr2']] : tableData[index]['attr2']
+        tableData[index]['attr3'] = (old_to_new[tableData[index]['attr3']] !== undefined) ? old_to_new[tableData[index]['attr3']] : tableData[index]['attr3']
+        tableData[index]['attr4'] = (old_to_new[tableData[index]['attr4']] !== undefined) ? old_to_new[tableData[index]['attr4']] : tableData[index]['attr4']
+    }
+    localStorage.setItem('newVersionTemp', JSON.stringify(newVersionTemp))
 }
 
 
 // 初始化页面和模态框
 window.onload = function () {
     initial()
-    checkAutoLogin()
 };
