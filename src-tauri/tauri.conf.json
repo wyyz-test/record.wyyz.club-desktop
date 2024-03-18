@@ -58,7 +58,8 @@
         "height": 800,
         "resizable": true,
         "title": "毒奶粉-各角色自定义记录",
-        "width": 1500
+        "width": 1500,
+        "center": true
       }
     ]
   }
