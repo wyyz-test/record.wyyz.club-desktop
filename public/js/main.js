@@ -4,6 +4,9 @@ var tableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var tempTableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var autoLogin = localStorage.getItem('autoLogin') === "true";
 var newVersionChecked = localStorage.getItem('newVersionChecked') === "true";
+
+const version = '0.1.0'
+
 // 可用的Bootstrap颜色类
 const classes = [
     "table-primary", "table-secondary", "table-success",
@@ -35,8 +38,8 @@ function generateSelectOptions(selectElement, options) {
     selectElement.innerHTML = ""; // 清空现有选项
     options.forEach(option => {
         const opt = document.createElement('option');
-        if (newVersionChecked){
-            option = old_to_new[option]!== undefined?old_to_new[option]:option
+        if (newVersionChecked) {
+            option = old_to_new[option] !== undefined ? old_to_new[option] : option
         }
         opt.value = option;
         opt.textContent = option;
@@ -90,6 +93,7 @@ function sortData() {
     console.log(tableData);
     localStorage.setItem('tableData', JSON.stringify(tableData));
     updataData()
+    transferToNewVersion()
     refreshPage()
 }
 
@@ -164,7 +168,7 @@ function closeLoginModal() {
         // 在这里处理异常
         console.error(e);
         // 你可以在这里添加更多的错误处理逻辑，比如显示用户友好的错误消息等
-    } 
+    }
 }
 
 
@@ -350,6 +354,7 @@ function saveData() {
     if (role && categorySelect && partsSelect && name && attr1 && attr2 && attr3 && attr4) {
         tableData.push({id, role, categorySelect, partsSelect, name, icon, attr1, attr2, attr3, attr4, remark});
         localStorage.setItem('tableData', JSON.stringify(tableData));
+        transferToNewVersion()
         general("all");
         clearInputFields();
         populateAll()
@@ -429,6 +434,7 @@ function deleteRow(targetId) {
         tableData.splice(index, 1);
     }
     localStorage.setItem('tableData', JSON.stringify(tableData));
+    transferToNewVersion()
     refreshPage();
 }
 
@@ -534,6 +540,7 @@ function importData() {
                     throw new Error('Unsupported file type');
                 }
                 checkData();
+                transferToNewVersion()
                 refreshPage();
             } catch (error) {
                 showConfirmModal('错误提示', '文件内容格式错误或不支持的文件类型！', false).then(() => {
@@ -672,11 +679,12 @@ function clearData() {
                 // 这里处理用户确认的逻辑
                 // 清空数据
                 tableData = [];
-                newVersionTemp = []
+                nullData = []
                 localStorage.setItem('tableData', JSON.stringify(tableData));
                 localStorage.removeItem('noShowModalAgain');
                 localStorage.removeItem('newVersionChecked');
-                localStorage.setItem("newVersionTemp", JSON.stringify(newVersionTemp))
+                localStorage.setItem("newVersionTemp", JSON.stringify(nullData))
+                localStorage.setItem("oldVersionTemp", JSON.stringify(nullData))
                 refreshPage(); // 刷新页面以更新视图
             }
         })
@@ -766,6 +774,7 @@ function addTableEditListener() {
                     editKey = key;
                     tableData[editedIndex][key] = newValue
                     localStorage.setItem('tableData', JSON.stringify(tableData));
+                    transferToNewVersion()
                     populateAll()
                     // 显示修改成功提示
                     showToast("修改提示", "修改成功。");
@@ -803,6 +812,7 @@ function checkData() {
         }
     });
     localStorage.setItem('tableData', JSON.stringify(tableData));
+    transferToNewVersion()
 }
 
 // 检查条件的函数
@@ -846,6 +856,7 @@ function syncData() {
                                 removeTableEditListener()
                                 addTableEditListener()
                                 localStorage.setItem('tableData', JSON.stringify(tableData));
+                                transferToNewVersion()
                             }
                             console.log(data)
                         })
@@ -967,6 +978,7 @@ function initialEventListener() {
 }
 
 function initial() {
+    transferToNewVersion()
     initialEventListener()
     // 初始化模态框
     initializeModal();
@@ -1001,22 +1013,99 @@ function checkAuto() {
 }
 
 function transferToNewVersion() {
+    console.log("正在进行转换...")
     if (tableData.length === 0) {
         return
     }
-    localStorage.setItem('oldVersionTemp', JSON.stringify(tableData))
-    var newVersionTemp = tableData
-    for (var index = 0; index < tableData.length; index++) {
-        tableData[index]['attr1'] = (old_to_new[tableData[index]['attr1']] !== undefined) ? old_to_new[tableData[index]['attr1']] : tableData[index]['attr1']
-        tableData[index]['attr2'] = (old_to_new[tableData[index]['attr2']] !== undefined) ? old_to_new[tableData[index]['attr2']] : tableData[index]['attr2']
-        tableData[index]['attr3'] = (old_to_new[tableData[index]['attr3']] !== undefined) ? old_to_new[tableData[index]['attr3']] : tableData[index]['attr3']
-        tableData[index]['attr4'] = (old_to_new[tableData[index]['attr4']] !== undefined) ? old_to_new[tableData[index]['attr4']] : tableData[index]['attr4']
+    var newVersionTemp = JSON.parse(JSON.stringify(tableData));
+    var oldVersionTemp = JSON.parse(JSON.stringify(tableData));
+
+    for (var index = 0; index < newVersionTemp.length; index++) {
+        newVersionTemp[index]['attr1'] = (old_to_new[newVersionTemp[index]['attr1']] !== undefined) ? old_to_new[newVersionTemp[index]['attr1']] : newVersionTemp[index]['attr1']
+        newVersionTemp[index]['attr2'] = (old_to_new[newVersionTemp[index]['attr2']] !== undefined) ? old_to_new[newVersionTemp[index]['attr2']] : newVersionTemp[index]['attr2']
+        newVersionTemp[index]['attr3'] = (old_to_new[newVersionTemp[index]['attr3']] !== undefined) ? old_to_new[newVersionTemp[index]['attr3']] : newVersionTemp[index]['attr3']
+        newVersionTemp[index]['attr4'] = (old_to_new[newVersionTemp[index]['attr4']] !== undefined) ? old_to_new[newVersionTemp[index]['attr4']] : newVersionTemp[index]['attr4']
     }
+    for (var index2 = 0; index2 < oldVersionTemp.length; index2++) {
+        oldVersionTemp[index2]['attr1'] = (new_to_old[oldVersionTemp[index2]['attr1']] !== undefined) ? new_to_old[oldVersionTemp[index2]['attr1']] : oldVersionTemp[index2]['attr1']
+        oldVersionTemp[index2]['attr2'] = (new_to_old[oldVersionTemp[index2]['attr2']] !== undefined) ? new_to_old[oldVersionTemp[index2]['attr2']] : oldVersionTemp[index2]['attr2']
+        oldVersionTemp[index2]['attr3'] = (new_to_old[oldVersionTemp[index2]['attr3']] !== undefined) ? new_to_old[oldVersionTemp[index2]['attr3']] : oldVersionTemp[index2]['attr3']
+        oldVersionTemp[index2]['attr4'] = (new_to_old[oldVersionTemp[index2]['attr4']] !== undefined) ? new_to_old[oldVersionTemp[index2]['attr4']] : oldVersionTemp[index2]['attr4']
+    }
+
     localStorage.setItem('newVersionTemp', JSON.stringify(newVersionTemp))
+    localStorage.setItem('oldVersionTemp', JSON.stringify(oldVersionTemp))
 }
 
+//just for desktop version
+// 使用示例
+const rawUrl = 'https://raw.githubusercontent.com/wyyz-test/record.wyyz.club-desktop/main/vesion';
+
+async function fetchFileFromGitHubRawUrl(rawUrl) {
+    try {
+        const response = await fetch(rawUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const text = await response.text();
+        return text;
+    } catch (error) {
+        console.error('请求GitHub文件时发生错误:', error);
+        return '请求失败';
+    }
+}
+
+function updateRemind(linkHref, newVersion) {
+    return new Promise((resolve, reject) => {
+        // 获取模态框中的元素
+        var modal = document.getElementById('confirmModal');
+        var modalTitle = document.getElementById('confirmModalLabel');
+        var modalBody = modal.querySelector('.modal-body');
+        var confirmBtn = modal.querySelector('#confirmBtn');
+        var cancelBtn = modal.querySelector('#cancelBtn');
+
+        // 设置模态框的标题和正文内容
+        modalTitle.textContent = '新版本提示';
+        modalBody.innerHTML = `有新版本啦~<br><a href="${linkHref}">点此下载最新版本</a>`
+        modalBody.style.textAlign = 'center'; // 添加这一行来设置文本居中
+        // 根据showCancelButton参数决定是否显示取消按钮
+        cancelBtn.style.display = "none"
+
+        // 显示模态框
+        var confirmModal = new bootstrap.Modal(modal, {
+            keyboard: false
+        });
+        confirmModal.show();
+
+        // 处理确认按钮点击
+        confirmBtn.onclick = () => {
+            resolve(true);
+            confirmModal.hide();
+        };
+
+        // 直接处理模态框关闭事件，包括点击取消按钮或模态框背景
+        modal.addEventListener('hidden.bs.modal', function handler(event) {
+            modal.removeEventListener('hidden.bs.modal', handler);
+            reject(false); // 视为取消
+        });
+    });
+}
+
+function checkNewVersion() {
+    fetchFileFromGitHubRawUrl(rawUrl)
+        .then(content => {
+            console.log(content, typeof (content))
+            var versionData = JSON.parse(content)
+            if (versionData['version'] > version) {
+                updateRemind(versionData['link'])
+            }
+        })
+        .catch(error => console.error(error));
+}
 
 // 初始化页面和模态框
 window.onload = function () {
+    checkNewVersion()
     initial()
+
 };
