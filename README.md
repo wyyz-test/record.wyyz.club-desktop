@@ -8,7 +8,7 @@
 
 `npm run tauri:build`
 
-**layer.msg icon:**
+layer信息弹出图标:
 
 | 编号 | 类型    |
 |----|-------|

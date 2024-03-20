@@ -3,8 +3,9 @@
 var tableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var tempTableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var autoLogin = localStorage.getItem('autoLogin') === "true";
-var newVersionChecked = localStorage.getItem('newVersionChecked') === "true";
-const version = '0.1.0'
+var onTimeMention = localStorage.getItem('onTimeMention') === "true";
+var newVersionChecked = true;
+const version = '0.1.1'
 // 可用的Bootstrap颜色类
 const classes = [
     "table-primary", "table-secondary", "table-success",
@@ -253,7 +254,8 @@ function initialLogin() {
         if (!username.trim() || !password.trim()) {
             layer.confirm('用户名和密码都是必填项！', {
                 btn: ['知道了'],
-                title: "错误提示"
+                title: "错误提示",
+                btnAlign: 'c' // 尝试使用 Layer 内置的按钮居中参数
             }, function (index) {
                 layer.close(index)
             })
@@ -309,6 +311,7 @@ function initializeModal() {
             console.log("isLogin:", isLogin)
             layer.confirm('确认要退出登录？', {
                 btn: ['确定', "取消"],
+                btnAlign: 'c' // 尝试使用 Layer 内置的按钮居中参数
             }, function (index) {
                 console.log('用户确认了操作');
                 // 这里处理用户确认的逻辑
@@ -520,7 +523,6 @@ function exportData() {
 
 // 导入数据
 function importData() {
-    localStorage.setItem('newVersionChecked', "false")
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
     if (file) {
@@ -670,6 +672,7 @@ function filterTable() {
 function clearData() {
     layer.confirm('您确定要清空吗？请注意，操作不可撤销！', {
         btn: ['确定', "取消"],
+        btnAlign: 'c' // 尝试使用 Layer 内置的按钮居中参数
     }, function (index) {
         console.log('用户确认了操作');
         // 这里处理用户确认的逻辑
@@ -843,6 +846,7 @@ function syncData() {
     if (isLogin) {
         layer.confirm('您确定要进行同步吗？', {
             btn: ['确定', "取消"],
+            btnAlign: 'c', // 尝试使用 Layer 内置的按钮居中参数
         }, function (index) {
             console.log('用户确认了操作');
             searchData(userData['username'])
@@ -895,6 +899,7 @@ function updateNow() {
     }
     layer.confirm('您确定要上传数据到云端吗？', {
         btn: ['确定', "取消"],
+        btnAlign: 'c', // 尝试使用 Layer 内置的按钮居中参数
     }, function (index) {
         console.log('用户确认了操作');
         // 这里处理用户确认的逻辑
@@ -906,31 +911,6 @@ function updateNow() {
 }
 
 function initialEventListener() {
-    // 获取复选框元素
-    var checkbox = document.getElementById('verSionCheck');
-
-    // 添加事件监听器到复选框
-    checkbox.addEventListener('change', function () {
-        if (tableData.length === 0) {
-            return
-        }
-        // 检查复选框是否被选中
-        if (this.checked) {
-            var newVersionTemp = JSON.parse(localStorage.getItem('newVersionTemp')) || []
-            console.log('加载最新版本...');
-            localStorage.setItem("tableData", JSON.stringify(newVersionTemp))
-            localStorage.setItem("newVersionChecked", "true")
-            refreshPage()
-        } else {
-            var oldVersionTemp = JSON.parse(localStorage.getItem('oldVersionTemp')) || [];
-            if (oldVersionTemp !== []) {
-                localStorage.setItem("tableData", JSON.stringify(oldVersionTemp))
-                localStorage.setItem("newVersionChecked", "false")
-                refreshPage()
-            }
-        }
-    });
-
     var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
     var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
         return new bootstrap.Popover(popoverTriggerEl)
@@ -962,14 +942,6 @@ function checkAuto() {
     } else {
         console.log("未开启自动登录")
     }
-    if (newVersionChecked) {
-        console.log("自动登录开启新版本~")
-        var newVersionInput = document.getElementById('verSionCheck')
-        newVersionInput.checked = true
-    } else {
-        transferToNewVersion()
-    }
-
 }
 
 function transferToNewVersion() {
@@ -995,6 +967,8 @@ function transferToNewVersion() {
 
     localStorage.setItem('newVersionTemp', JSON.stringify(newVersionTemp))
     localStorage.setItem('oldVersionTemp', JSON.stringify(oldVersionTemp))
+    localStorage.setItem('tableData', JSON.stringify(newVersionTemp))
+    tableData = JSON.parse(localStorage.getItem('tableData')) || []
 }
 
 //just for desktop version
@@ -1017,36 +991,13 @@ async function fetchFileFromGitHubRawUrl(rawUrl) {
 
 function updateRemind(linkHref, newVersion) {
     return new Promise((resolve, reject) => {
-        // 获取模态框中的元素
-        var modal = document.getElementById('confirmModal');
-        var modalTitle = document.getElementById('confirmModalLabel');
-        var modalBody = modal.querySelector('.modal-body');
-        var confirmBtn = modal.querySelector('#confirmBtn');
-        var cancelBtn = modal.querySelector('#cancelBtn');
-
-        // 设置模态框的标题和正文内容
-        modalTitle.textContent = '新版本提示';
-        modalBody.innerHTML = `有新版本啦~<br><a href="${linkHref}">点此下载最新版本</a>`
-        modalBody.style.textAlign = 'center'; // 添加这一行来设置文本居中
-        // 根据showCancelButton参数决定是否显示取消按钮
-        cancelBtn.style.display = "none"
-
-        // 显示模态框
-        var confirmModal = new bootstrap.Modal(modal, {
-            keyboard: false
-        });
-        confirmModal.show();
-
-        // 处理确认按钮点击
-        confirmBtn.onclick = () => {
-            resolve(true);
-            confirmModal.hide();
-        };
-
-        // 直接处理模态框关闭事件，包括点击取消按钮或模态框背景
-        modal.addEventListener('hidden.bs.modal', function handler(event) {
-            modal.removeEventListener('hidden.bs.modal', handler);
-            reject(false); // 视为取消
+        layer.open({
+            btn: ['知道了'],
+            time: 99999,
+            type: 1,
+            area: '420px',
+            btnAlign: 'c', // 尝试使用 Layer 内置的按钮居中参数
+            content: `<div style="text-align: center;">有新版本啦~<br>当前版本：${version}<br>最新版本：${newVersion}<br><a href="${linkHref}">点此下载最新版本</a></div>`
         });
     });
 }
@@ -1057,21 +1008,31 @@ function checkNewVersion() {
             console.log(content, typeof (content))
             var versionData = JSON.parse(content)
             if (versionData['version'] > version) {
-                updateRemind(versionData['link'])
+                updateRemind(versionData['link'], versionData['version'])
             }
         })
         .catch(error => console.error(error));
 }
 
-function onTimeMotion() {
-
+function onTimeMentionCheck() {
+    if (onTimeMention) {
+        return
+    }
+    layer.confirm('请注意：<br>03.21版本更新后，会自动切换为默认显示最新版本!<br>旧版本数据将在后续更新中弃用!<br>如需保留旧版数据，请自行在下列步骤导出：<br><br>F12->应用->本地存储空间->找到record.wyyz.club->oldVersionTemp<br><br>本通知只显示一次！', {
+        btn: ['确定'],
+        btnAlign: 'c', // 尝试使用 Layer 内置的按钮居中参数
+    }, function (index) {
+        console.log('用户确认了操作');
+        // 这里处理用户确认的逻辑
+        layer.close(index)
+    })
+    localStorage.setItem('onTimeMention', "true");
 }
-
-
 
 
 // 初始化页面和模态框
 window.onload = function () {
-    checkNewVersion()
     initial()
+    onTimeMentionCheck()
+    checkNewVersion()
 };
