@@ -1,0 +1,61 @@
+#roleStatsModal .table-custom th,
+#roleStatsModal .table-custom td {
+    padding: 0.3rem;
+    /* 减小单元格内边距 */
+    font-size: 0.8rem;
+    /* 减小字体大小 */
+}
+
+/* 调整图片大小和卡片高度，如有必要 */
+.custom-card img {
+    height: 80px;
+    /* 调整图片高度 */
+    object-fit: cover;
+    /* 保持图片宽高比 */
+}
+
+.text-truncate {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#scrollTopBtn img,
+#scrollBottomBtn img {
+    width: 30px;
+    /* 调整为合适的尺寸 */
+    height: 30px;
+    /* 调整为合适的尺寸 */
+}
+
+.editable:hover {
+    cursor: pointer;
+    background-color: #f0f0f0;
+    /* 轻微的背景色变化 */
+}
+
+.nav-top {
+    margin-left: 15px;
+}
+
+/* 自定义样式以增加表单元素之间的间距 */
+.form-group {
+    margin-bottom: 1rem;
+    /* 调整为所需的间距 */
+}
+
+.modal-footer {
+    justify-content: center;
+    /* 按钮居中显示 */
+}
+
+.modal-footer .btn {
+    margin: 0 10px;
+    /* 按钮之间的间距 */
+}
+
+.toast-container {
+    z-index: 1000;
+    /* 设置一个较高的 z-index 值 */
+}

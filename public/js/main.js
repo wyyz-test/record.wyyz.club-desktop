@@ -4,9 +4,7 @@ var tableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var tempTableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var autoLogin = localStorage.getItem('autoLogin') === "true";
 var newVersionChecked = localStorage.getItem('newVersionChecked') === "true";
-
 const version = '0.1.0'
-
 // 可用的Bootstrap颜色类
 const classes = [
     "table-primary", "table-secondary", "table-success",
@@ -137,21 +135,6 @@ function showData() {
     myModal.show();
 }
 
-function showToast(title, message) {
-    // 获取Toast元素和其子元素
-    const toastEl = document.querySelector('#toastContainer .toast');
-    const toastTitle = document.getElementById('toastTitle');
-    const toastBody = document.getElementById('toastBody');
-
-    // 设置标题和消息内容
-    toastTitle.textContent = title;
-    toastBody.textContent = message;
-
-    // 初始化并显示Toast
-    const toast = new bootstrap.Toast(toastEl);
-    toast.show();
-}
-
 function updateLoginName(username) {
     // 假设您有一个元素用于显示用户名，ID为"user-name"
     const userNameDisplay = document.getElementById('user-name');
@@ -185,7 +168,9 @@ function login(username, password, type) {
                 if (data['result'] == null) {
                     setData(username, userData)
                         .then(result => {
-                            showToast("登录提示", "初次登录，密码设置成功");
+                            layer.msg('初次登录，密码设置成功~', {icon: 6}, function () {
+                                // layer.msg('提示框关闭后的回调');
+                            });
                             updateLoginName(username); // 更新登录名
                             if (type === "manual") {
                                 closeLoginModal()
@@ -196,10 +181,14 @@ function login(username, password, type) {
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            showToast("登录提示", "登录失败~");
+                            layer.msg('登录失败~密码或用户名错误~', {icon: 5}, function () {
+                                // layer.msg('提示框关闭后的回调');
+                            });
                         });
                 } else if (JSON.parse(data['result'])['pwd'] === hashHex) {
-                    showToast("登录提示", "登录成功~");
+                    layer.msg('登录成功~', {icon: 6}, function () {
+                        // layer.msg('提示框关闭后的回调');
+                    });
                     updateLoginName(username); // 更新登录名
                     if (type === "manual") {
                         closeLoginModal()
@@ -208,14 +197,18 @@ function login(username, password, type) {
                     isLogin = true
                     checkLogin(type)
                 } else {
-                    showToast("登录提示", "登录失败~");
+                    layer.msg('登录失败~密码或用户名错误~', {icon: 5}, function () {
+                        // layer.msg('提示框关闭后的回调');
+                    });
                 }
 
             });
         })
         .catch(error => {
             console.error('Error:', error);
-            showToast("操作失败", false);
+            layer.msg('操作失败~', {icon: 5}, function () {
+                // layer.msg('提示框关闭后的回调');
+            });
         });
 }
 
@@ -236,11 +229,15 @@ function updataData() {
     userData['data'] = tableData
     setData(userData['username'], userData)
         .then(result => {
-            showToast("上传提示", "上传成功~数据已保存~");
+            layer.msg('上传成功~数据已保存~', {icon: 1}, function () {
+                // layer.msg('提示框关闭后的回调');
+            });
         })
         .catch(error => {
             console.error('Error:', error);
-            showToast("上传提示", "上传失败~");
+            layer.msg('上传失败~', {icon: 2}, function () {
+                // layer.msg('提示框关闭后的回调');
+            });
         })
 }
 
@@ -254,11 +251,12 @@ function initialLogin() {
 
         // 检查用户名和密码是否都已输入
         if (!username.trim() || !password.trim()) {
-            showConfirmModal('错误提示', '用户名和密码都是必填项！', false)
-                .then(() => {
-                    console.log('知道了');
-                    // 处理用户点击确认后的逻辑
-                })
+            layer.confirm('用户名和密码都是必填项！', {
+                btn: ['知道了'],
+                title: "错误提示"
+            }, function (index) {
+                layer.close(index)
+            })
             return; // 中止函数执行
         }
 
@@ -309,23 +307,23 @@ function initializeModal() {
             // 用户已登录，执行相应逻辑
             console.log('用户已登录，执行其他逻辑。');
             console.log("isLogin:", isLogin)
-            showConfirmModal('退出登录', '确认要退出登录？', true)
-                .then((result) => {
-                    if (result) {
-                        console.log('用户确认了操作');
-                        // 这里处理用户确认的逻辑
-                        isLogin = false
-                        checkLogin("manual")
-                        updateLoginName("未登录")
-                        showToast("登录提示", "退出成功~")
-                        localStorage.setItem('autoLogin', "false");
-                    }
-                })
-                .catch((result) => {
-                    console.log('用户取消了操作');
-                    // 这里处理用户取消的逻辑
+            layer.confirm('确认要退出登录？', {
+                btn: ['确定', "取消"],
+            }, function (index) {
+                console.log('用户确认了操作');
+                // 这里处理用户确认的逻辑
+                isLogin = false
+                checkLogin("manual")
+                updateLoginName("未登录")
+                layer.msg('退出成功~', {icon: 1}, function () {
+                    // layer.msg('提示框关闭后的回调');
                 });
-
+                localStorage.setItem('autoLogin', "false");
+                // layer.close(index)
+            }, function (index) {
+                console.log('用户取消了操作');
+                layer.close(index)
+            })
         } else {
             // 用户未登录，手动打开模态框
             var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
@@ -361,9 +359,8 @@ function saveData() {
         removeTableEditListener()
         addTableEditListener()
     } else {
-        showConfirmModal('错误提示', '请填写所有字段', false).then(() => {
-            console.log('知道了');
-            // 处理用户点击确认后的逻辑
+        layer.msg('请填写所有字段!（备注字段可以为空）', {icon: 2}, function () {
+            // layer.msg('提示框关闭后的回调');
         });
     }
 }
@@ -543,9 +540,8 @@ function importData() {
                 transferToNewVersion()
                 refreshPage();
             } catch (error) {
-                showConfirmModal('错误提示', '文件内容格式错误或不支持的文件类型！', false).then(() => {
-                    console.log('知道了');
-                    // 处理用户点击确认后的逻辑
+                layer.msg('文件内容格式错误或不支持的文件类型！', {icon: 5}, function () {
+                    // layer.msg('提示框关闭后的回调');
                 });
             }
         };
@@ -672,26 +668,24 @@ function filterTable() {
 
 // 清空数据的函数
 function clearData() {
-    showConfirmModal('清空确认', '您确定要清空吗？请注意，操作不可撤销！', true)
-        .then((result) => {
-            if (result) {
-                console.log('用户确认了操作');
-                // 这里处理用户确认的逻辑
-                // 清空数据
-                tableData = [];
-                nullData = []
-                localStorage.setItem('tableData', JSON.stringify(tableData));
-                localStorage.removeItem('noShowModalAgain');
-                localStorage.removeItem('newVersionChecked');
-                localStorage.setItem("newVersionTemp", JSON.stringify(nullData))
-                localStorage.setItem("oldVersionTemp", JSON.stringify(nullData))
-                refreshPage(); // 刷新页面以更新视图
-            }
-        })
-        .catch((result) => {
-            console.log('用户取消了操作');
-            // 这里处理用户取消的逻辑
-        });
+    layer.confirm('您确定要清空吗？请注意，操作不可撤销！', {
+        btn: ['确定', "取消"],
+    }, function (index) {
+        console.log('用户确认了操作');
+        // 这里处理用户确认的逻辑
+        // 清空数据
+        tableData = [];
+        nullData = []
+        localStorage.setItem('tableData', JSON.stringify(tableData));
+        localStorage.removeItem('noShowModalAgain');
+        localStorage.removeItem('newVersionChecked');
+        localStorage.setItem("newVersionTemp", JSON.stringify(nullData))
+        localStorage.setItem("oldVersionTemp", JSON.stringify(nullData))
+        refreshPage(); // 刷新页面以更新视图
+    }, function (index) {
+        console.log('用户取消了操作');
+        layer.close(index)
+    })
 }
 
 function copyToClipboard() {
@@ -708,7 +702,9 @@ function copyToClipboard() {
     document.body.removeChild(tempTextArea);
 
     // 显示复制成功的提示
-    showToast("复制提示", "自定义信息已复制到剪贴板。");
+    layer.msg('自定义信息已复制到剪贴板。', {icon: 6}, function () {
+        // layer.msg('提示框关闭后的回调');
+    });
 }
 
 function populateAll() {
@@ -739,7 +735,9 @@ function removeTableEditListener() {
 function addTableEditListener() {
     clickHandler = function () {
         // 显示修改提示
-        showToast("修改提示", "修改后点击任意位置即可自动保存。");
+        layer.msg('修改后点击任意位置即可自动保存。', {icon: -1}, function () {
+            // layer.msg('提示框关闭后的回调');
+        });
         // 确保单元格当前不是输入框
         if (this.querySelector('input')) return;
 
@@ -777,7 +775,9 @@ function addTableEditListener() {
                     transferToNewVersion()
                     populateAll()
                     // 显示修改成功提示
-                    showToast("修改提示", "修改成功。");
+                    layer.msg('修改成功。', {icon: 1}, function () {
+                        // layer.msg('提示框关闭后的回调');
+                    });
                     break;
                 }
             }
@@ -841,35 +841,35 @@ function checkLogin(type) {
 
 function syncData() {
     if (isLogin) {
-        showConfirmModal('同步确认', '您确定要执行这个操作吗？', true)
-            .then((result) => {
-                if (result) {
-                    console.log('用户确认了操作');
-                    searchData(userData['username'])
-                        .then(data => {
-                            jsonData = JSON.parse(data['result'])
-                            tableData = jsonData['data'] != null || jsonData['data'] !== undefined ? jsonData['data'] : tableData
-                            console.log(tableData)
-                            if (tableData != null) {
-                                general('all')
-                                populateAll()
-                                removeTableEditListener()
-                                addTableEditListener()
-                                localStorage.setItem('tableData', JSON.stringify(tableData));
-                                transferToNewVersion()
-                            }
-                            console.log(data)
-                        })
-                }
-            })
-            .catch((result) => {
-                console.log('用户取消了操作');
-                // 这里处理用户取消的逻辑
-            });
+        layer.confirm('您确定要进行同步吗？', {
+            btn: ['确定', "取消"],
+        }, function (index) {
+            console.log('用户确认了操作');
+            searchData(userData['username'])
+                .then(data => {
+                    jsonData = JSON.parse(data['result'])
+                    tableData = jsonData['data'] != null || jsonData['data'] !== undefined ? jsonData['data'] : tableData
+                    console.log(tableData)
+                    if (tableData != null) {
+                        general('all')
+                        populateAll()
+                        removeTableEditListener()
+                        addTableEditListener()
+                        localStorage.setItem('tableData', JSON.stringify(tableData));
+                        transferToNewVersion()
+                        layer.msg('数据同步成功啦~', {icon: 1}, function () {
+                            // layer.msg('提示框关闭后的回调');
+                        });
+                    }
+                    console.log(data)
+                })
+        }, function (index) {
+            console.log('用户取消了操作');
+            layer.close(index)
+        })
     } else {
-        showConfirmModal('错误提示', "请登录后再执行上传操作！", false).then(() => {
-            console.log('知道了');
-            // 处理用户点击确认后的逻辑
+        layer.msg('请登录后再进行同步操作！', {icon: 2}, function () {
+            // layer.msg('提示框关闭后的回调');
         });
     }
 }
@@ -888,62 +888,22 @@ function upLoadData() {
 
 function updateNow() {
     if (!isLogin) {
-        showConfirmModal('错误提示', '请登录后再执行上传操作!', false).then(() => {
-            console.log('知道了');
-            // 处理用户点击确认后的逻辑
+        layer.msg('请登录后再执行上传操作！', {icon: 2}, function () {
+            // layer.msg('提示框关闭后的回调');
         });
         return
     }
-    showConfirmModal('上传确认', '您确定要上传数据到云端吗？', true)
-        .then((result) => {
-            if (result) {
-                console.log('用户确认了操作');
-                // 这里处理用户确认的逻辑
-                updataData()
-            }
-        })
-        .catch((result) => {
-            console.log('用户取消了操作');
-            // 这里处理用户取消的逻辑
-        });
+    layer.confirm('您确定要上传数据到云端吗？', {
+        btn: ['确定', "取消"],
+    }, function (index) {
+        console.log('用户确认了操作');
+        // 这里处理用户确认的逻辑
+        updataData()
+    }, function (index) {
+        console.log('用户取消了操作');
+        layer.close(index)
+    })
 }
-
-function showConfirmModal(title, message, showCancelButton = true) {
-    return new Promise((resolve, reject) => {
-        // 获取模态框中的元素
-        var modal = document.getElementById('confirmModal');
-        var modalTitle = document.getElementById('confirmModalLabel');
-        var modalBody = modal.querySelector('.modal-body');
-        var confirmBtn = modal.querySelector('#confirmBtn');
-        var cancelBtn = modal.querySelector('#cancelBtn');
-
-        // 设置模态框的标题和正文内容
-        modalTitle.textContent = title;
-        modalBody.textContent = message;
-
-        // 根据showCancelButton参数决定是否显示取消按钮
-        cancelBtn.style.display = showCancelButton ? "" : "none";
-
-        // 显示模态框
-        var confirmModal = new bootstrap.Modal(modal, {
-            keyboard: false
-        });
-        confirmModal.show();
-
-        // 处理确认按钮点击
-        confirmBtn.onclick = () => {
-            resolve(true);
-            confirmModal.hide();
-        };
-
-        // 直接处理模态框关闭事件，包括点击取消按钮或模态框背景
-        modal.addEventListener('hidden.bs.modal', function handler(event) {
-            modal.removeEventListener('hidden.bs.modal', handler);
-            reject(false); // 视为取消
-        });
-    });
-}
-
 
 function initialEventListener() {
     // 获取复选框元素
@@ -1103,9 +1063,15 @@ function checkNewVersion() {
         .catch(error => console.error(error));
 }
 
+function onTimeMotion() {
+
+}
+
+
+
+
 // 初始化页面和模态框
 window.onload = function () {
     checkNewVersion()
     initial()
-
 };

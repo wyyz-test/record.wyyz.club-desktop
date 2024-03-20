@@ -7,70 +7,8 @@
     <title>毒奶粉-各角色持有自定义统计</title>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap-icons.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
     <link rel="icon" href="static/favicon.ico" type="image/x-icon">
-    <style>
-        #roleStatsModal .table-custom th,
-        #roleStatsModal .table-custom td {
-            padding: 0.3rem;
-            /* 减小单元格内边距 */
-            font-size: 0.8rem;
-            /* 减小字体大小 */
-        }
-
-        /* 调整图片大小和卡片高度，如有必要 */
-        .custom-card img {
-            height: 80px;
-            /* 调整图片高度 */
-            object-fit: cover;
-            /* 保持图片宽高比 */
-        }
-
-        .text-truncate {
-            max-width: 150px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        #scrollTopBtn img,
-        #scrollBottomBtn img {
-            width: 30px;
-            /* 调整为合适的尺寸 */
-            height: 30px;
-            /* 调整为合适的尺寸 */
-        }
-
-        .editable:hover {
-            cursor: pointer;
-            background-color: #f0f0f0;
-            /* 轻微的背景色变化 */
-        }
-
-        .nav-top {
-            margin-left: 15px;
-        }
-
-        /* 自定义样式以增加表单元素之间的间距 */
-        .form-group {
-            margin-bottom: 1rem;
-            /* 调整为所需的间距 */
-        }
-
-        .modal-footer {
-            justify-content: center;
-            /* 按钮居中显示 */
-        }
-
-        .modal-footer .btn {
-            margin: 0 10px;
-            /* 按钮之间的间距 */
-        }
-
-        .toast-container {
-            z-index: 1000;
-            /* 设置一个较高的 z-index 值 */
-        }
-    </style>
 </head>
 
 <!-- 引入 Bootstrap JavaScript -->
@@ -78,8 +16,10 @@
 <script src="js/uuid.min.js"></script>
 <script src="js/popper.min.js"></script>
 <script src="js/randomEquipmentData.js"></script>
-<script src="js/db.js"></script>
+<script src="js/jquery.js"></script>
 <script src="js/main.js"></script>
+<script src="js/layer.js"></script>
+<script src="js/db.js"></script>
 
 <body>
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -124,9 +64,6 @@
                 <li class="nav-item nav-top">
                     <label for="nameFilter" style="display: inline-block;">韩服最新版本</label>
                     <input class="form-check-input" type="checkbox" value="" id="verSionCheck">
-                </li>
-                <li class="nav-item nav-top">
-                    <a href="./wy.html">喂养计算器</a>
                 </li>
             </ul>
             <a class="d-flex nav-item" id="user-name">未登录</a>
@@ -206,7 +143,6 @@
     <button class="btn btn-info" id="updateButton" onclick="updateNow()">上传</button>
     <button class="btn btn-warning" id="sortButton" onclick="sortData()">排序</button>
     <button class="btn btn-danger" id="dataButton" onclick="showData()">统计</button>
-
 </div>
 
 <!-- 使用方法模态框 -->
@@ -320,38 +256,6 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 通用的Toast容器 -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer">
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <strong class="me-auto" id="toastTitle">提示</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body" id="toastBody">
-            消息内容。
-        </div>
-    </div>
-</div>
-
-<!-- 确认对话框模态框 -->
-<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmModalLabel">确认操作</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                您确定要执行这个操作吗？
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="confirmBtn">确认</button>
-                <button type="button" class="btn btn-secondary" id="cancelBtn" data-bs-dismiss="modal">取消</button>
             </div>
         </div>
     </div>
