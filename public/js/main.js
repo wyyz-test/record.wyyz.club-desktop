@@ -5,7 +5,7 @@ var tempTableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var autoLogin = localStorage.getItem('autoLogin') === "true";
 var onTimeMention = localStorage.getItem('onTimeMention') === "true";
 var newVersionChecked = true;
-const version = '0.1.1'
+const version = '0.1.2'
 // 可用的Bootstrap颜色类
 const classes = [
     "table-primary", "table-secondary", "table-success",
@@ -37,9 +37,7 @@ function generateSelectOptions(selectElement, options) {
     selectElement.innerHTML = ""; // 清空现有选项
     options.forEach(option => {
         const opt = document.createElement('option');
-        if (newVersionChecked) {
-            option = old_to_new[option] !== undefined ? old_to_new[option] : option
-        }
+        option = old_to_new[option] !== undefined ? old_to_new[option] : option
         opt.value = option;
         opt.textContent = option;
         selectElement.appendChild(opt);
@@ -855,12 +853,11 @@ function syncData() {
                     tableData = jsonData['data'] != null || jsonData['data'] !== undefined ? jsonData['data'] : tableData
                     console.log(tableData)
                     if (tableData != null) {
+                        transferToNewVersion()
                         general('all')
                         populateAll()
                         removeTableEditListener()
                         addTableEditListener()
-                        localStorage.setItem('tableData', JSON.stringify(tableData));
-                        transferToNewVersion()
                         layer.msg('数据同步成功啦~', {icon: 1}, function () {
                             // layer.msg('提示框关闭后的回调');
                         });
@@ -965,10 +962,20 @@ function transferToNewVersion() {
         oldVersionTemp[index2]['attr4'] = (new_to_old[oldVersionTemp[index2]['attr4']] !== undefined) ? new_to_old[oldVersionTemp[index2]['attr4']] : oldVersionTemp[index2]['attr4']
     }
 
-    localStorage.setItem('newVersionTemp', JSON.stringify(newVersionTemp))
-    localStorage.setItem('oldVersionTemp', JSON.stringify(oldVersionTemp))
-    localStorage.setItem('tableData', JSON.stringify(newVersionTemp))
+    let recordNewVersionTemp = JSON.stringify(newVersionTemp)
+    let recordOldVersionTemp = JSON.stringify(oldVersionTemp)
+
+    console.log("Cover 最终伤害 to 技能伤害")
+    recordNewVersionTemp = recordNewVersionTemp.replace("最终伤害", "技能伤害")
+    recordOldVersionTemp = recordOldVersionTemp.replace("最终伤害", "技能伤害")
+
+
+
+    localStorage.setItem('newVersionTemp', recordNewVersionTemp)
+    localStorage.setItem('oldVersionTemp', recordOldVersionTemp)
+    localStorage.setItem('tableData', recordNewVersionTemp)
     tableData = JSON.parse(localStorage.getItem('tableData')) || []
+
 }
 
 //just for desktop version
@@ -1016,6 +1023,8 @@ function checkNewVersion() {
 
 function onTimeMentionCheck() {
     if (onTimeMention) {
+        initial()
+        checkNewVersion()
         return
     }
     layer.confirm('请注意：<br>03.21版本更新后，会自动切换为默认显示最新版本!<br>旧版本数据将在后续更新中弃用!<br>如需保留旧版数据，请自行在下列步骤导出：<br><br>F12->应用->本地存储空间->找到record.wyyz.club->oldVersionTemp<br><br>本通知只显示一次！', {
@@ -1025,6 +1034,8 @@ function onTimeMentionCheck() {
         console.log('用户确认了操作');
         // 这里处理用户确认的逻辑
         layer.close(index)
+        initial()
+        checkNewVersion()
     })
     localStorage.setItem('onTimeMention', "true");
 }
@@ -1032,7 +1043,5 @@ function onTimeMentionCheck() {
 
 // 初始化页面和模态框
 window.onload = function () {
-    initial()
     onTimeMentionCheck()
-    checkNewVersion()
 };
