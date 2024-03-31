@@ -562,7 +562,7 @@ function parseCSV(csvString) {
         for (let j = 0; j < headers.length; j++) {
             // 去除字段值中的转义双引号
             let value = currentLine[j] || "";
-            value = value.replace(/^"|"$/g, '').replace(/\\"/g, '"');
+            value = value.replace(/^"|"$/g, '').replace(/\\"/g, '"')
             obj[headers[j]] = value;
         }
         result.push(obj);
@@ -963,18 +963,17 @@ function transferToNewVersion() {
         oldVersionTemp[index2]['attr4'] = (new_to_old[oldVersionTemp[index2]['attr4']] !== undefined) ? new_to_old[oldVersionTemp[index2]['attr4']] : oldVersionTemp[index2]['attr4']
     }
 
-    let recordNewVersionTemp = JSON.stringify(newVersionTemp)
-    let recordOldVersionTemp = JSON.stringify(oldVersionTemp)
+    let recordNewVersionTemp = JSON.stringify(newVersionTemp);
+    let recordOldVersionTemp = JSON.stringify(oldVersionTemp);
 
-    console.log("Cover 最终伤害 to 技能伤害")
-    recordNewVersionTemp = recordNewVersionTemp.replace("最终伤害", "技能伤害")
-    recordOldVersionTemp = recordOldVersionTemp.replace("最终伤害", "技能伤害")
-
+    recordNewVersionTemp = recordNewVersionTemp.replace(/最终伤害/g, "技能伤害");
+    recordOldVersionTemp = recordOldVersionTemp.replace(/最终伤害/g, "技能伤害");
 
 
     localStorage.setItem('newVersionTemp', recordNewVersionTemp)
     localStorage.setItem('oldVersionTemp', recordOldVersionTemp)
     localStorage.setItem('tableData', recordNewVersionTemp)
+
     tableData = JSON.parse(localStorage.getItem('tableData')) || []
 
 }
