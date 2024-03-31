@@ -1,11 +1,12 @@
 // 假设我们有一个数组，包含了我们想在表格中展示的数据
-
+const version = '0.1.2'
 var tableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var tempTableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var autoLogin = localStorage.getItem('autoLogin') === "true";
 var onTimeMention = localStorage.getItem('onTimeMention') === "true";
+var notCheckUpdate = localStorage.getItem(version) === "true";
 var newVersionChecked = true;
-const version = '0.1.2'
+
 // 可用的Bootstrap颜色类
 const classes = [
     "table-primary", "table-secondary", "table-success",
@@ -999,7 +1000,16 @@ async function fetchFileFromGitHubRawUrl(rawUrl) {
 function updateRemind(linkHref, newVersion) {
     return new Promise((resolve, reject) => {
         layer.open({
-            btn: ['知道了'],
+            btn: ['知道了', "不再提示"],
+            yes: function(index, layero){
+                // 第一个按钮的回调
+                layer.close(index); // 如果需要手动关闭弹窗，可以调用layer.close方法
+            },
+            btn2: function(index, layero){
+                // 第二个按钮的回调
+                layer.close(index); // 如果需要手动关闭弹窗，可以调用layer.close方法
+                localStorage.setItem(version, "true")
+            },
             time: 99999,
             type: 1,
             area: '420px',
@@ -1010,6 +1020,9 @@ function updateRemind(linkHref, newVersion) {
 }
 
 function checkNewVersion() {
+    if (notCheckUpdate){
+        return
+    }
     fetchFileFromGitHubRawUrl(rawUrl)
         .then(content => {
             console.log(content, typeof (content))
