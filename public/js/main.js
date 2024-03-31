@@ -1,5 +1,5 @@
 // 假设我们有一个数组，包含了我们想在表格中展示的数据
-const version = '0.1.2'
+const version = '0.1.3'
 var tableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var tempTableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var autoLogin = localStorage.getItem('autoLogin') === "true";
