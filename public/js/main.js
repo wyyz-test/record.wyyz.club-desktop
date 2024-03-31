@@ -1,12 +1,11 @@
 // 假设我们有一个数组，包含了我们想在表格中展示的数据
-const version = '0.1.3'
 var tableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var tempTableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var autoLogin = localStorage.getItem('autoLogin') === "true";
 var onTimeMention = localStorage.getItem('onTimeMention') === "true";
 var notCheckUpdate = localStorage.getItem(version) === "true";
 var newVersionChecked = true;
-
+const version = '0.1.3'
 // 可用的Bootstrap颜色类
 const classes = [
     "table-primary", "table-secondary", "table-success",
