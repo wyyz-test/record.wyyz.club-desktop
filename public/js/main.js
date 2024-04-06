@@ -3,9 +3,9 @@ var tableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var tempTableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var autoLogin = localStorage.getItem('autoLogin') === "true";
 var onTimeMention = localStorage.getItem('onTimeMention') === "true";
-var notCheckUpdate = localStorage.getItem(version) === "true";
 var newVersionChecked = true;
 const version = '0.1.3'
+var notCheckUpdate = localStorage.getItem(version) === "true";
 // 可用的Bootstrap颜色类
 const classes = [
     "table-primary", "table-secondary", "table-success",
@@ -529,7 +529,7 @@ function importData() {
             const result = e.target.result;
             try {
                 // 自动根据文件类型解析数据
-                if (file.name.endsWith('.json')) {
+                if (file.name.endsWith('.json') || file.name.endsWith('.txt')) {
                     tableData = JSON.parse(result);
                 } else if (file.name.endsWith('.csv')) {
                     tableData = parseCSV(result);
@@ -995,7 +995,7 @@ async function fetchFileFromGitHubRawUrl(rawUrl) {
     }
 }
 
-function updateRemind(linkHref, newVersion) {
+function updateRemind(linkHref, newVersion, info) {
     return new Promise((resolve, reject) => {
         layer.open({
             btn: ['知道了', "不再提示"],
@@ -1012,7 +1012,7 @@ function updateRemind(linkHref, newVersion) {
             type: 1,
             area: '420px',
             btnAlign: 'c', // 尝试使用 Layer 内置的按钮居中参数
-            content: `<div style="text-align: center;">有新版本啦~<br>当前版本：${version}<br>最新版本：${newVersion}<br><a href="${linkHref}">点此下载最新版本</a></div>`
+            content: `<div style="text-align: center;">有新版本啦~<br>当前版本：${version}<br>最新版本：${newVersion}<br><br>更新信息：${info}<br><br><a href="${linkHref}">点此下载最新版本</a></div>`
         });
     });
 }
@@ -1026,7 +1026,7 @@ function checkNewVersion() {
             console.log(content, typeof (content))
             var versionData = JSON.parse(content)
             if (versionData['version'] > version) {
-                updateRemind(versionData['link'], versionData['version'])
+                updateRemind(versionData['link'], versionData['version'], versionData['info'])
             }
         })
         .catch(error => console.error(error));

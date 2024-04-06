@@ -128,7 +128,7 @@
     <button class="btn btn-success" onclick="saveData()">保存</button>
     <button class="btn btn-primary" onclick="refreshPage()">刷新</button>
     <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exportModal">导出</button>
-    <input type="file" id="fileInput" style="display: none;" onchange="importData()" accept=".json, .csv">
+    <input type="file" id="fileInput" style="display: none;" onchange="importData()" accept=".json, .csv, .txt">
     <button class="btn btn-warning" onclick="document.getElementById('fileInput').click()">导入</button>
     <button class="btn btn-danger" onclick="clearData()">清空</button>
     <!-- 按钮用于触发复制操作 -->
@@ -158,8 +158,8 @@
                     <li><strong>名字筛选：</strong>筛选出指定名字的所有数据。</li>
                     <li><strong>保存：</strong>点击“保存”按钮将当前数据保存到本地存储。</li>
                     <li><strong>刷新：</strong>点击“刷新”按钮可刷新页面内容。</li>
-                    <li><strong>导出：</strong>点击“导出”按钮可以将当前的数据导出为TXT文件。</li>
-                    <li><strong>导入：</strong>点击“导入”按钮可以从TXT文件导入数据。</li>
+                    <li><strong>导出：</strong>点击“导出”按钮可以将当前的数据导出为JSON文件。</li>
+                    <li><strong>导入：</strong>点击“导入”按钮可以从JSON文件导入数据。</li>
                     <li><strong>清空：</strong>点击“清空”按钮将清除所有现有数据（需确认）。</li>
                     <li><strong>复制：</strong>点击“复制”按钮将复制现有数据到剪贴板。</li>
                     <li><strong>登录：</strong>点击“登录”按钮将打开登录窗口进行登录操作。</li>
