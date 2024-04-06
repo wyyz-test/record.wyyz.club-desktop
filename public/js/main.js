@@ -4,7 +4,7 @@ var tempTableData = JSON.parse(localStorage.getItem('tableData')) || [];
 var autoLogin = localStorage.getItem('autoLogin') === "true";
 var onTimeMention = localStorage.getItem('onTimeMention') === "true";
 var newVersionChecked = true;
-const version = '0.1.3'
+const version = '0.1.4'
 var notCheckUpdate = localStorage.getItem(version) === "true";
 // 可用的Bootstrap颜色类
 const classes = [
